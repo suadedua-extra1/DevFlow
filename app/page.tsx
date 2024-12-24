@@ -1,5 +1,6 @@
 const Home = () => (
-  <h1 className="text-3xl font-black text-violet-700">
+  // eslint-disable-next-line tailwindcss/no-custom-classname
+  <h1 className="text-primary-100 text-center text-3xl">
     New Nextjs application
   </h1>
 );
