@@ -1,61 +1,73 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
+import importPlugin from "eslint-plugin-import";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
   baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
 });
 
 const eslintConfig = [
+  {
+    ignores: ["components/ui/**/*"],
+  },
   ...compat.extends(
     "next/core-web-vitals",
     "next/typescript",
     "standard",
     "plugin:tailwindcss/recommended",
     "prettier"
-  ), 
+  ),
   {
-   " plugin": {"import": "eslint-plugin-import", "tailwindcss": "eslint-plugin-tailwindcss"},
-    "rules": {
+    plugins: {
+      import: importPlugin,
+    },
+
+    rules: {
       "import/order": [
         "error",
         {
-          "groups": [
-            "builtin", // Built-in types are first
-            "external", // External libraries
-            "internal", // Internal modules
-            ["parent", "sibling"], // Parent and sibling types can be mingled together
-            "index", // Then the index file
-            "object", // Object imports
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling"],
+            "index",
+            "object",
           ],
+
           "newlines-between": "always",
-          "pathGroups": [
+
+          pathGroups: [
             {
-              "pattern": "@app/**",
-              "group": "external",
-              "position": "after",
+              pattern: "@app/**",
+              group: "external",
+              position: "after",
             },
           ],
-          "pathGroupsExcludedImportTypes": ["builtin"],
-          "alphabetize": {
-            "order": "asc",
-            "caseInsensitive": true,
+
+          pathGroupsExcludedImportTypes: ["builtin"],
+
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
           },
         },
       ],
     },
-    "ignorePatterns": ["components/ui/**"],
-    "overrides": [
-      {
-        "files": ["*.ts", "*.tsx"],
-        "rules": {
-          "no-undef": "off",
-        },
-      },
-    ],
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+
+    rules: {
+      "no-undef": "off",
+    },
   },
 ];
 
